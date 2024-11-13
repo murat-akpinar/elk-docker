@@ -21,13 +21,17 @@ services:
       - "9300:9300"
     networks:
       - elk
-    command: ["/bin/bash", "-c", "/usr/local/bin/docker-entrypoint.sh elasticsearch && /init-elasticsearch.sh"]
+    command:
+    - /bin/sh
+    - -c
+    - |
+      bash /usr/local/bin/docker-entrypoint.sh elasticsearch &&
+      bash /init-elasticsearch.sh
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cat/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-
   logstash:
     image: docker.elastic.co/logstash/logstash:7.14.0
     container_name: logstash
@@ -64,7 +68,6 @@ services:
 networks:
   elk:
     driver: bridge
-
 volumes:
   esdata:
     driver: local
