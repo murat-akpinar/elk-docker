@@ -15,23 +15,17 @@ services:
         hard: -1
     volumes:
       - ./esdata:/usr/share/elasticsearch/data
-      - ./init-elasticsearch.sh:/init-elasticsearch.sh
     ports:
       - "9200:9200"
       - "9300:9300"
     networks:
       - elk
-    command:
-    - /bin/sh
-    - -c
-    - |
-      bash /usr/local/bin/docker-entrypoint.sh elasticsearch &&
-      bash /init-elasticsearch.sh
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200/_cat/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+
   logstash:
     image: docker.elastic.co/logstash/logstash:7.14.0
     container_name: logstash
@@ -43,12 +37,14 @@ services:
     networks:
       - elk
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9600/"]
       interval: 30s
       timeout: 10s
       retries: 3
+
   kibana:
     image: docker.elastic.co/kibana/kibana:7.14.0
     container_name: kibana
@@ -59,15 +55,34 @@ services:
     networks:
       - elk
     depends_on:
-      - elasticsearch
+      elasticsearch:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5601/api/status"]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  init-elasticsearch:
+    image: alpine:3.14
+    container_name: init-elasticsearch
+    volumes:
+      - ./init-elasticsearch.sh:/init-elasticsearch.sh
+    command:
+    - /bin/sh
+    - -c
+    - |
+      apk add --no-cache curl &&
+      sh /init-elasticsearch.sh
+    networks:
+      - elk
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      logstash:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
 networks:
   elk:
     driver: bridge
-volumes:
-  esdata:
-    driver: local
