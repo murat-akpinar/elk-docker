@@ -97,10 +97,3 @@ Bu adımları tamamladıktan sonra, aşağıdaki URL'lerden ELK Stack bileşenle
 
 ---
 
-## Notlar
-
-- ELK Stack'i Docker Compose ile çalıştırmak için sisteminizde Docker ve Docker Compose yüklü olmalıdır.
-- Elasticsearch'ün başlatılabilmesi için sistemde en az 4 GB RAM'in serbest olduğundan emin olun.
-- Logstash ve Kibana'nın düzgün çalışabilmesi için Elasticsearch'in aktif olması gerekmektedir.
-
-Bu rehberde verilen adımlarla ELK Stack'i başarıyla ayağa kaldırabilir ve sisteminizi gerçek zamanlı analiz için hazır hale getirebilirsiniz.
