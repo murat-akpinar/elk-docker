@@ -31,6 +31,7 @@ services:
     container_name: logstash
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
+      - /var/log/nginx:/var/log/nginx:ro
     ports:
       - "6000:6000"
       - "9600:9600"
